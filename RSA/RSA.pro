@@ -10,10 +10,14 @@ CONFIG += c++11
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    rsa_keycreator.cpp \
+    rsa_keysaver.cpp
 
 HEADERS += \
-    mainwindow.h
+    mainwindow.h \
+    rsa_keycreator.h \
+    rsa_keysaver.h
 
 FORMS += \
     mainwindow.ui
