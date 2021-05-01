@@ -1,53 +1,23 @@
 #ifndef RSA_KEYSAVER_H
 #define RSA_KEYSAVER_H
 
-#include <QFile>
-#include <QDataStream>
-#include <QIODevice>
 class RSA_KeySaver
 {
 private:
     unsigned int n;
     unsigned int e;
     unsigned int d;
-    char BiteArray[100];
 public:
-    RSA_KeySaver(unsigned int _n, unsigned int _e, unsigned int _d);
+    RSA_KeySaver(); //Конструктор, пустой
+    RSA_KeySaver(unsigned int _n, unsigned int _e, unsigned int _d); //Конструктор, внос ключей в объект
 
-    void GetKey(unsigned int* _n, unsigned int* _e, unsigned int* _d)
-    {
-        *_n = n;
-        *_e = e;
-        *_d = d;
-    }
+    void GetKey(unsigned int* _n, unsigned int* _e, unsigned int* _d); //Возврат значений ключей
 
-    void SaveKey(RSA_KeySaver& obj)
-    {
-        if(e != 0)
-        {
-            QFile file("Key.public.bin");
-            file.open(QIODevice::WriteOnly);
-            QDataStream out(&file);
-            out << obj.n;
-            out << obj.e;
+    void SaveKey(const char* FileName); //Сохранение ключей в файл
 
-            out.writeRawData(obj.BiteArray,sizeof(obj.BiteArray));
+    void ReadKey(const char* FileName); //Чтение ключей из файла
 
-            out << obj.BiteArray;
-            file.close();
-        }
-        /*if(d != 0)
-        {
-            QFile file("Key.private.bin");
-            file.open(QIODevice::WriteOnly);
-            QDataStream out(&file);
-            out << obj.n;
-            out << obj.d;
-            out.writeRawData(obj.BiteArray,sizeof(obj.BiteArray));
-
-            file.close();
-        }*/
-    }
+    void OutKey();
 };
 
 #endif // RSA_KEYSAVER_H

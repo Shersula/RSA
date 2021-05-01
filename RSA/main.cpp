@@ -23,8 +23,9 @@ int main(int argc, char *argv[])
     time(&end);
     qDebug() << "Время выполнения: " << difftime(end, start) << Qt::endl;
 
-    RSA_KeySaver SKey(n,e,d);
-
-    SKey.SaveKey(SKey);
+    RSA_KeySaver PublicSave(n, e, 0);
+    RSA_KeySaver PrivateSave(n, 0, d);
+    PublicSave.SaveKey("Key.private");
+    PrivateSave.SaveKey("Key.public");
     return a.exec();
 }
