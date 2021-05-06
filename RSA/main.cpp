@@ -13,8 +13,8 @@ int main(int argc, char *argv[])
     time_t start, end;
     time(&start);
     int e = 0, n = 0, d = 0;
-    RSA_KeyCreator key;
-    key.CreateKey(&e, &n, &d);
+    //RSA_KeyCreator key;
+    //key.CreateKey(&e, &n, &d);
 
     qDebug() << "e:" << e << Qt::endl;
     qDebug() << "n:" << n << Qt::endl;
