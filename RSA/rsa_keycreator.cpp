@@ -18,9 +18,10 @@ RSA_KeyCreator::~RSA_KeyCreator() //Деструктор
     delete[] SimpleNumber; // Удалим указатель на динамический массив
 }
 
-void RSA_KeyCreator::CreateKey(long int* e, long int* n, long int* d)
+void RSA_KeyCreator::CreateKey(quint64* e, quint64* n, quint64* d)
 {
     int p = 0, q = 0, Euler = 0;
+//SelectN:
     p = SimpleNumber[rand() % Length];
     q = SimpleNumber[rand() % Length];
     *n = p*q;
@@ -40,7 +41,7 @@ EulerNumber:
     qDebug() << "e: " << *e << Qt::endl;
 
     //Приватный ключ
-    int DVariants[1000];
+    int* DVariants = new int[Euler];
     int Dsize = 0;
     for(int i = 0; i < Euler; i++)
     {
@@ -48,13 +49,13 @@ EulerNumber:
         if(value != 0) continue;
         DVariants[Dsize] = i;
         Dsize++;
-        if (Dsize==999) break;
     }
 FindPrivate:
     if(Dsize > 0) *d = DVariants[rand() % Dsize];
     else *d = DVariants[0];
-    if(*d == 0) goto FindPrivate;
+    if(*d == 0 || *d > 200000) goto FindPrivate;
     qDebug() << "d: " << *d << Qt::endl;
+    delete[] DVariants;
 }
 
 void RSA_KeyCreator::SieveOfEratosthenes()

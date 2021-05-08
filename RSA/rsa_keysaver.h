@@ -1,21 +1,22 @@
 #ifndef RSA_KEYSAVER_H
 #define RSA_KEYSAVER_H
-
+#include <QString>
+#include <QtGlobal>
 class RSA_KeySaver
 {
 private:
-    unsigned int n;
-    unsigned int e;
-    unsigned int d;
+    quint64 n;
+    quint64 e;
+    quint64 d;
 public:
     RSA_KeySaver(); //Конструктор, пустой
-    RSA_KeySaver(unsigned int _n, unsigned int _e, unsigned int _d); //Конструктор, внос ключей в объект
+    RSA_KeySaver(quint64 _n, quint64 _e, quint64 _d); //Конструктор, внос ключей в объект
 
-    void GetKey(unsigned int* _n, unsigned int* _e, unsigned int* _d); //Возврат значений ключей
+    void GetKey(quint64* _n, quint64* _e, quint64* _d); //Возврат значений ключей
 
-    void SaveKey(const char* FileName); //Сохранение ключей в файл
+    void SaveKey(QString FileName); //Сохранение ключей в файл
 
-    void ReadKey(const char* FileName); //Чтение ключей из файла
+    void ReadKey(QString FileName); //Чтение ключей из файла
 
     void OutKey();
 };

@@ -1,6 +1,6 @@
 #ifndef RSA_KEYCREATOR_H
 #define RSA_KEYCREATOR_H
-
+#include <QtGlobal>
 class RSA_KeyCreator
 {
 public:
@@ -8,8 +8,7 @@ public:
     RSA_KeyCreator(int MaxNumber);
     ~RSA_KeyCreator();
 
-    void CreateKey(long int* e,long int* n,long int* d);//Создание ключей e,n,d
-
+    void CreateKey(quint64* e, quint64* n, quint64* d);//Создание ключей e,n,d
 private:
     int* SimpleNumber;
     int Length = 0;

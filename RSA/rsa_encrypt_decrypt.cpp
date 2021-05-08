@@ -5,13 +5,13 @@ RSA_Encrypt_Decrypt::RSA_Encrypt_Decrypt()
 
 }
 
-unsigned long int RSA_Encrypt_Decrypt::EDcrypt(int ch, int n, int e)
+quint64 RSA_Encrypt_Decrypt::EDcrypt(quint64 ch, quint64 n, quint64 e)
 {
-    unsigned long int res=1;
-    for(int i=0;i<e;i++)
+    quint64 res=Q_UINT64_C(1);
+    for(quint64 i=0;i<e;i++)
     {
         res*=ch;
-        res=res%n;
+        res%=n;
         if (e>100000) qDebug() << "i: " << i << " "<< "res: " << res << Qt::endl;
     }
 
