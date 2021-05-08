@@ -8,7 +8,7 @@ public:
     RSA_KeyCreator(int MaxNumber);
     ~RSA_KeyCreator();
 
-    void CreateKey(int* e, int* n, int* d);//Создание ключей e,n,d
+    void CreateKey(long int* e,long int* n,long int* d);//Создание ключей e,n,d
 
 private:
     int* SimpleNumber;

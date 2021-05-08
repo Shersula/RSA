@@ -11,11 +11,13 @@ CONFIG += c++11
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
+    rsa_encrypt_decrypt.cpp \
     rsa_keycreator.cpp \
     rsa_keysaver.cpp
 
 HEADERS += \
     mainwindow.h \
+    rsa_encrypt_decrypt.h \
     rsa_keycreator.h \
     rsa_keysaver.h
 

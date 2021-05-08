@@ -18,7 +18,7 @@ RSA_KeyCreator::~RSA_KeyCreator() //Деструктор
     delete[] SimpleNumber; // Удалим указатель на динамический массив
 }
 
-void RSA_KeyCreator::CreateKey(int* e, int* n, int* d)
+void RSA_KeyCreator::CreateKey(long int* e, long int* n, long int* d)
 {
     int p = 0, q = 0, Euler = 0;
     p = SimpleNumber[rand() % Length];
@@ -40,7 +40,7 @@ EulerNumber:
     qDebug() << "e: " << *e << Qt::endl;
 
     //Приватный ключ
-    int* DVariants = new int[Euler];
+    int DVariants[1000];
     int Dsize = 0;
     for(int i = 0; i < Euler; i++)
     {
@@ -48,18 +48,18 @@ EulerNumber:
         if(value != 0) continue;
         DVariants[Dsize] = i;
         Dsize++;
+        if (Dsize==999) break;
     }
 FindPrivate:
     if(Dsize > 0) *d = DVariants[rand() % Dsize];
     else *d = DVariants[0];
     if(*d == 0) goto FindPrivate;
-    delete[] DVariants;
     qDebug() << "d: " << *d << Qt::endl;
 }
 
 void RSA_KeyCreator::SieveOfEratosthenes()
 {
-    Length = 500 + rand() % 1501;
+    Length = 100 + rand() % 601;
     SimpleNumber = new int[Length];// Создание динамического массива с размером Length
     int CountSimpleNumber = Length-1; // Счетчик простых чисел который идет от обратного. Всего чисел Length-1 так как 1 всегда вычеркнуто, уменьшаем счетчик на 1 каждый раз когда вычеркиваем какое-либо число
     for(int i = 0; i < Length; i++) // Заполняем динамический массив числами от 1 до Length включительно
