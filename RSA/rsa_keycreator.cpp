@@ -37,6 +37,7 @@ void RSA_KeyCreator::CreateKey(int* e, int* n, int* d)
 EulerNumber:
     *e = SimpleNumber[rand() % Length];
     if(Euler % *e == 0) goto EulerNumber;
+    qDebug() << "e: " << *e << Qt::endl;
 
     //Приватный ключ
     int* DVariants = new int[Euler];
@@ -53,6 +54,7 @@ FindPrivate:
     else *d = DVariants[0];
     if(*d == 0) goto FindPrivate;
     delete[] DVariants;
+    qDebug() << "d: " << *d << Qt::endl;
 }
 
 void RSA_KeyCreator::SieveOfEratosthenes()
