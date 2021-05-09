@@ -25,11 +25,7 @@ void MainWindow::on_GenerateButton_clicked()
 
     KeyGen = new QThread(); //создание объекта потока
 
-    if(SaveDirectory.isNull())
-    {
-        SaveDirectory = QFileDialog::getExistingDirectory(this, "Выберите папку для сохранения ключей", "C://");
-        qDebug()<<SaveDirectory<<Qt::endl;
-    }
+    if(SaveDirectory.isNull()) SaveDirectory = QFileDialog::getExistingDirectory(this, "Выберите папку для сохранения ключей", "C://");
     key = new RSA_KeyCreator; //Объект класса создания ключей
 
     connect(this, QMetaObject::normalizedSignature(SIGNAL(StartKeyGenerate(RSA_KeySaver*, RSA_KeySaver*))), key, QMetaObject::normalizedSignature(SLOT(CreateKey(RSA_KeySaver*, RSA_KeySaver*))));//Запускаем создание ключей, когда вызовется сигнал StartKeyGenerate то в объекте создания ключей вызовется слот для создания ключей
@@ -42,6 +38,8 @@ void MainWindow::on_GenerateButton_clicked()
 
     splash.setPixmap(QPixmap(":images/load.jpg"));
     splash.show();
+    splash.move(this->pos());
+    splash.showMessage("Выполняется генерация ключей, ожидайте...");
 
     emit StartKeyGenerate(&PublicSave, &PrivateSave);//Вызов сигнала на создание ключей
 }
@@ -80,6 +78,7 @@ void MainWindow::KeyPostEditing()
         if(Q_UINT64_C(45) == res)
         {
             isBadKey = false;
+            ui->WarningInfo->clear();
             splash.close();
         }
         else
@@ -111,6 +110,7 @@ void MainWindow::on_SearchPrivateButton_clicked()//private
         text = "(" + QString::number(n) + ", " + QString::number(d) + ")";
 
         ui->lineEdit_3->insert(text);
+        ui->WarningInfo->clear();
     }
 }
 
@@ -128,6 +128,7 @@ void MainWindow::on_SearchPublicButton_clicked()//public
         text = "(" + QString::number(n) + ", " + QString::number(e) + ")";
 
         ui->lineEdit_2->insert(text);
+        ui->WarningInfo->clear();
     }
 }
 
@@ -139,12 +140,38 @@ void MainWindow::on_StartDEcrypt_clicked()
     if(ui->CryptState->currentIndex() == 0)
     {
         PublicSave.GetKey(&n, &e, &d);
+
+        if(n == 0 && e == 0)
+        {
+           ui->WarningInfo->setStyleSheet("color: rgb(184, 15, 10)");
+           ui->WarningInfo->setText("Отсутствуют ключи!");
+           return void();
+        }
+        splash.setPixmap(QPixmap(":images/load.jpg"));
+        splash.show();
+        splash.move(this->pos());
+        splash.showMessage("Выполняется обработка текста, ожидайте...");
+        QApplication::processEvents();
+
         QString str = Test.EDcrypt(ui->InputText->toPlainText(), n, e);
         ui->OutputText->setPlainText(str);
     }
     else
     {
         PrivateSave.GetKey(&n, &e, &d);
+
+        if(n == 0 && d == 0)
+        {
+            ui->WarningInfo->setStyleSheet("color: rgb(184, 15, 10)");
+            ui->WarningInfo->setText("Отсутствуют ключи!");
+            return void();
+        }
+        splash.setPixmap(QPixmap(":images/load.jpg"));
+        splash.show();
+        splash.move(this->pos());
+        splash.showMessage("Выполняется обработка текста, ожидайте...");
+        QApplication::processEvents();
+
         QString str = Test.EDcrypt(ui->InputText->toPlainText(), n, d);
         ui->OutputText->setPlainText(str);
     }
@@ -153,6 +180,7 @@ void MainWindow::on_StartDEcrypt_clicked()
         FileCR FileSave;
         FileSave.WriteFile(SaveFileDirectory, ui->OutputText->toPlainText());
     }
+    splash.close();
 }
 
 void MainWindow::on_SelectLoadFile_clicked()

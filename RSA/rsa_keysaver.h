@@ -2,6 +2,7 @@
 #define RSA_KEYSAVER_H
 #include <QString>
 #include <QtGlobal>
+#include <QFile>
 class RSA_KeySaver
 {
 private:

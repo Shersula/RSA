@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>626</width>
+    <width>634</width>
     <height>382</height>
    </rect>
   </property>
@@ -401,7 +401,22 @@
            </layout>
           </item>
           <item row="3" column="0">
-           <layout class="QVBoxLayout" name="verticalLayout_6"/>
+           <layout class="QVBoxLayout" name="verticalLayout_6">
+            <item>
+             <widget class="QLabel" name="WarningInfo">
+              <property name="font">
+               <font>
+                <pointsize>29</pointsize>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </item>
@@ -416,7 +431,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>626</width>
+     <width>634</width>
      <height>21</height>
     </rect>
    </property>

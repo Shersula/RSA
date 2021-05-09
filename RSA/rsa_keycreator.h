@@ -21,10 +21,10 @@ private:
 
     int EulerFunction(int p, int q);//Функция Эйлера
 
-public slots: void CreateKey(RSA_KeySaver* PublicKey, RSA_KeySaver* PrivateKey);//Создание ключей e,n,d
+public slots: void CreateKey(RSA_KeySaver* PublicKey, RSA_KeySaver* PrivateKey);//Слот создания ключей e,n,d
 
 signals:
-    void FinishThread();//Конец создания ключей
+    void FinishThread();//Конец создания ключей(сигнал)
 };
 
 #endif // RSA_KEYCREATOR_H

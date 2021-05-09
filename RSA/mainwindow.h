@@ -21,6 +21,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
     RSA_KeySaver PublicSave; //Объект для хранения пары публичного ключа
     RSA_KeySaver PrivateSave;//Объект для хранения пары приватного ключа
 
