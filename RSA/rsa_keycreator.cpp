@@ -1,7 +1,4 @@
 #include "rsa_keycreator.h"
-#include <math.h>
-#include <time.h>
-#include <QDebug>
 
 RSA_KeyCreator::RSA_KeyCreator()
 {
@@ -18,44 +15,45 @@ RSA_KeyCreator::~RSA_KeyCreator() //Деструктор
     delete[] SimpleNumber; // Удалим указатель на динамический массив
 }
 
-void RSA_KeyCreator::CreateKey(quint64* e, quint64* n, quint64* d)
+void RSA_KeyCreator::CreateKey(RSA_KeySaver* PublicKey, RSA_KeySaver* PrivateKey)
 {
     int p = 0, q = 0, Euler = 0;
-//SelectN:
+    quint64 e = 0, n = 0, d = 0;
+
+SelectN:
     p = SimpleNumber[rand() % Length];
     q = SimpleNumber[rand() % Length];
-    *n = p*q;
-
-    qDebug() << "p: " << p << Qt::endl;
-    qDebug() << "q: " << q << Qt::endl;
-    qDebug() << "n: " << *n << Qt::endl;
+    n = p*q;
+    if(n < 3000 || n > 65535) goto SelectN;
 
     //Публичный ключ
     Euler = EulerFunction(p, q);
-    qDebug() << "Euler: " << Euler << Qt::endl;
     delete[] SimpleNumber;
     SieveOfEratosthenes(Euler-1);
 EulerNumber:
-    *e = SimpleNumber[rand() % Length];
-    if(Euler % *e == 0) goto EulerNumber;
-    qDebug() << "e: " << *e << Qt::endl;
+    e = SimpleNumber[rand() % Length];
+    if(Euler % e == 0) goto EulerNumber;
 
     //Приватный ключ
     int* DVariants = new int[Euler];
     int Dsize = 0;
     for(int i = 0; i < Euler; i++)
     {
-        int value = ((*e * i) % Euler)-1;
+        int value = ((e * i) % Euler)-1;
         if(value != 0) continue;
         DVariants[Dsize] = i;
         Dsize++;
     }
 FindPrivate:
-    if(Dsize > 0) *d = DVariants[rand() % Dsize];
-    else *d = DVariants[0];
-    if(*d == 0 || *d > 200000) goto FindPrivate;
-    qDebug() << "d: " << *d << Qt::endl;
+    if(Dsize > 0) d = DVariants[rand() % Dsize];
+    else d = DVariants[0];
+    if(d == 0 || d > 200000) goto FindPrivate;
     delete[] DVariants;
+
+    PublicKey->SetKey(n, e, 0);
+    PrivateKey->SetKey(n, 0, d);
+
+    emit FinishThread();//Говорим потоку что генерация завершена
 }
 
 void RSA_KeyCreator::SieveOfEratosthenes()
@@ -123,7 +121,6 @@ void RSA_KeyCreator::SimpleNumberArrayResize(int CountSimpleNumber)
             CountSimpleNumber--;
         }
     }
-
     int* tempArray = new int[CountSimpleNumber];
     for(int i = 0, j = 0; i < Length; i++)
     {

@@ -39,3 +39,10 @@ void RSA_KeySaver::GetKey(quint64* _n, quint64* _e, quint64* _d)
     *_e = e;
     *_d = d;
 }
+
+void RSA_KeySaver::SetKey(quint64 _n, quint64 _e, quint64 _d)
+{
+    n = _n;
+    e = _e;
+    d = _d;
+}

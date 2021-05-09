@@ -1,11 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QString>
-#include <rsa_keycreator.h>
-#include "QDebug"
-#include "rsa_encrypt_decrypt.h"
-#include <rsa_keysaver.h>
-#include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -22,22 +16,42 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
-    ui ->plainTextEdit_2->clear();
+    ui ->InputText->clear();
 }
 
-void MainWindow::on_pushButton_7_clicked()
+void MainWindow::on_GenerateButton_clicked()
 {
+    if(KeyGen != nullptr && KeyGen->isRunning()) return void();
+
+    KeyGen = new QThread(); //создание объекта потока
+
     if(SaveDirectory.isNull())
     {
         SaveDirectory = QFileDialog::getExistingDirectory(this, "Выберите папку для сохранения ключей", "C://");
         qDebug()<<SaveDirectory<<Qt::endl;
     }
-    quint64 e = 0, n = 0, d = 0,res=0;
+    key = new RSA_KeyCreator; //Объект класса создания ключей
+
+    connect(this, QMetaObject::normalizedSignature(SIGNAL(StartKeyGenerate(RSA_KeySaver*, RSA_KeySaver*))), key, QMetaObject::normalizedSignature(SLOT(CreateKey(RSA_KeySaver*, RSA_KeySaver*))));//Запускаем создание ключей, когда вызовется сигнал StartKeyGenerate то в объекте создания ключей вызовется слот для создания ключей
+    connect(key, SIGNAL(FinishThread()), this, SLOT(KeyPostEditing()));
+
+    connect(this, SIGNAL(destroyed()), KeyGen, SLOT(quit())); //Задаем подключение, сигнал(если форма уничтожена) то слот завершает работу потока
+
+    key->moveToThread(KeyGen); //Перемещение объекта создания ключей в поток
+    KeyGen->start(); //Запуск потока
+
+    splash.setPixmap(QPixmap(":images/load.jpg"));
+    splash.show();
+
+    emit StartKeyGenerate(&PublicSave, &PrivateSave);//Вызов сигнала на создание ключей
+}
+
+void MainWindow::KeyPostEditing()
+{
+    KeyGen->quit();
+    quint64 n, e, d, res;
+
     bool isBadKey = true;
-
-    RSA_KeyCreator key;
-    key.CreateKey(&e, &n, &d);
-
     while(isBadKey)
     {
         ui->lineEdit_2->clear();
@@ -45,68 +59,113 @@ void MainWindow::on_pushButton_7_clicked()
 
         QString text;
 
+        PublicSave.GetKey(&n, &e, &res);
         text = "(" + QString::number(n) + ", " + QString::number(e) + ")";
-
         ui->lineEdit_2->insert(text);
 
+        PrivateSave.GetKey(&n, &res, &d);
         text = "(" + QString::number(n) + ", " + QString::number(d) + ")";
-
         ui->lineEdit_3->insert(text);
 
 
-        RSA_Encrypt_Decrypt test;
-        res=test.EDcrypt(Q_UINT64_C(45),n,e);
-        qDebug()<<"Результат: "<<res<<Qt::endl;
+        delete key;//Удаление указателя на объект создания ключей
+        delete KeyGen;//Удаление указателя на объект потока
+        KeyGen = nullptr;
+        key = nullptr;
 
+        RSA_Encrypt_Decrypt TestOnBadKey; //Проверка валидности ключа
+        res=TestOnBadKey.EDcrypt(Q_UINT64_C(45),n,e);
         if(Q_UINT64_C(45) == res) continue;
-
-        res=test.EDcrypt(res,n,d);
-        qDebug()<<"Результат: "<<res<<Qt::endl;
-
-        if(Q_UINT64_C(45) == res) isBadKey = false;
+        res=TestOnBadKey.EDcrypt(res,n,d);
+        if(Q_UINT64_C(45) == res)
+        {
+            isBadKey = false;
+            splash.close();
+        }
+        else
+        {
+            MainWindow::on_GenerateButton_clicked();
+            return void();
+        }
     }
     if(SaveDirectory.isNull()) return void();
-    RSA_KeySaver PublicSave(n, e, 0);
-    RSA_KeySaver PrivateSave(n, 0, d);
     SaveDirectory += "/Key.private";
     PrivateSave.SaveKey(SaveDirectory);
-    SaveDirectory.chop(7);
-    SaveDirectory += "public";
+    SaveDirectory.chop(12);
+    SaveDirectory += "/Key.public";
     PublicSave.SaveKey(SaveDirectory);
+    SaveDirectory.chop(11);
 }
 
-void MainWindow::on_pushButton_5_clicked()//private
+void MainWindow::on_SearchPrivateButton_clicked()//private
 {
     PrivateDirectory = QFileDialog::getOpenFileName(this, "Выберите файл с приватным ключом", "C://", "*.private");
     if(!PrivateDirectory.isNull() && PrivateDirectory.endsWith(".private", Qt::CaseSensitivity()))
     {
         quint64 e = 0, n = 0, d = 0;
-        RSA_KeySaver PrivateSave;
         PrivateSave.ReadKey(PrivateDirectory);
         PrivateSave.GetKey(&n, &e, &d);
 
         QString text;
-
+        ui->lineEdit_3->clear();
         text = "(" + QString::number(n) + ", " + QString::number(d) + ")";
 
         ui->lineEdit_3->insert(text);
     }
 }
 
-void MainWindow::on_pushButton_6_clicked()
+void MainWindow::on_SearchPublicButton_clicked()//public
 {
     PublicDirectory = QFileDialog::getOpenFileName(this, "Выберите файл с публичным ключом", "C://", "*.public");
     if(!PublicDirectory.isNull() && PublicDirectory.endsWith(".public", Qt::CaseSensitivity()))
     {
         quint64 e = 0, n = 0, d = 0;
-        RSA_KeySaver PublicSave;
         PublicSave.ReadKey(PublicDirectory);
         PublicSave.GetKey(&n, &e, &d);
 
         QString text;
-
+        ui->lineEdit_2->clear();
         text = "(" + QString::number(n) + ", " + QString::number(e) + ")";
 
         ui->lineEdit_2->insert(text);
     }
+}
+
+void MainWindow::on_StartDEcrypt_clicked()
+{
+    quint64 e = 0, n = 0, d = 0;
+    RSA_Encrypt_Decrypt Test;
+
+    if(ui->CryptState->currentIndex() == 0)
+    {
+        PublicSave.GetKey(&n, &e, &d);
+        QString str = Test.EDcrypt(ui->InputText->toPlainText(), n, e);
+        ui->OutputText->setPlainText(str);
+    }
+    else
+    {
+        PrivateSave.GetKey(&n, &e, &d);
+        QString str = Test.EDcrypt(ui->InputText->toPlainText(), n, d);
+        ui->OutputText->setPlainText(str);
+    }
+    if(!SaveFileDirectory.isNull())
+    {
+        FileCR FileSave;
+        FileSave.WriteFile(SaveFileDirectory, ui->OutputText->toPlainText());
+    }
+}
+
+void MainWindow::on_SelectLoadFile_clicked()
+{
+    LoadFileDirectory = QFileDialog::getOpenFileName(this, "Выберите файл из которого будет взят текст", "C://");
+    if(!LoadFileDirectory.isNull())
+    {
+        FileCR FileLoad;
+        ui->InputText->setPlainText(FileLoad.ReadFile(LoadFileDirectory));
+    }
+}
+
+void MainWindow::on_SelectSaveFile_clicked()
+{
+    SaveFileDirectory = QFileDialog::getOpenFileName(this, "Выберите файл в который будет сохранен текст", "C://");
 }

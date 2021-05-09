@@ -14,11 +14,11 @@ public:
 
     void GetKey(quint64* _n, quint64* _e, quint64* _d); //Возврат значений ключей
 
+    void SetKey(quint64 _n, quint64 _e, quint64 _d); //Установка значений ключей
+
     void SaveKey(QString FileName); //Сохранение ключей в файл
 
     void ReadKey(QString FileName); //Чтение ключей из файла
-
-    void OutKey();
 };
 
 #endif // RSA_KEYSAVER_H
