@@ -195,5 +195,5 @@ void MainWindow::on_SelectLoadFile_clicked()
 
 void MainWindow::on_SelectSaveFile_clicked()
 {
-    SaveFileDirectory = QFileDialog::getOpenFileName(this, "Выберите файл в который будет сохранен текст", "C://");
+    SaveFileDirectory = QFileDialog::getSaveFileName(this, "Выберите файл в который будет сохранен текст", "С://RSA_Output.txt");
 }
