@@ -2,6 +2,9 @@
     <qresource prefix="/images">
         <file>load.jpg</file>
         <file>logo.ico</file>
-
+        <file>logo.jpg</file>
+    </qresource>
+    <qresource prefix="/license">
+        <file>COPYING.txt</file>
     </qresource>
 </RCC>

@@ -1,6 +1,23 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+/*
+Copyright (C) 2021
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see https://www.gnu.org/licenses/.
+*/
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -65,8 +82,8 @@ void MainWindow::KeyPostEditing()
         text = "(" + QString::number(n) + ", " + QString::number(d) + ")";
         ui->lineEdit_3->insert(text);
 
-        ThreadCheck:
-        if(KeyGen->isRunning()) goto ThreadCheck;
+        CheckThread:
+        if(KeyGen->isRunning()) goto CheckThread;
         delete key;//Удаление указателя на объект создания ключей
         delete KeyGen;//Удаление указателя на объект потока
         KeyGen = nullptr;
@@ -197,4 +214,13 @@ void MainWindow::on_SelectLoadFile_clicked()
 void MainWindow::on_SelectSaveFile_clicked()
 {
     SaveFileDirectory = QFileDialog::getSaveFileName(this, "Выберите файл в который будет сохранен текст", "С://RSA_Output.txt");
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    QFile file(":license/COPYING.txt");
+    QFile filecheck(QDir::currentPath()+"/COPYING.txt");
+    if(filecheck.exists()) filecheck.remove();
+    file.copy(QDir::currentPath()+"/COPYING.txt");
+    QDesktopServices::openUrl(QUrl(QDir::currentPath()+"/COPYING.txt"));
 }
