@@ -21,7 +21,7 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::on_GenerateButton_clicked()
 {
-    if(KeyGen != nullptr && KeyGen->isRunning()) return void();
+    if(KeyGen != nullptr) return void();
 
     KeyGen = new QThread(); //создание объекта потока
 
@@ -65,7 +65,8 @@ void MainWindow::KeyPostEditing()
         text = "(" + QString::number(n) + ", " + QString::number(d) + ")";
         ui->lineEdit_3->insert(text);
 
-
+        ThreadCheck:
+        if(KeyGen->isRunning()) goto ThreadCheck;
         delete key;//Удаление указателя на объект создания ключей
         delete KeyGen;//Удаление указателя на объект потока
         KeyGen = nullptr;
