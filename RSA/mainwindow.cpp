@@ -222,5 +222,6 @@ void MainWindow::on_pushButton_2_clicked()
     QFile filecheck(QDir::currentPath()+"/COPYING.txt");
     if(filecheck.exists()) filecheck.remove();
     file.copy(QDir::currentPath()+"/COPYING.txt");
-    QDesktopServices::openUrl(QUrl(QDir::currentPath()+"/COPYING.txt"));
+    QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::currentPath() + "/COPYING.txt"));
+    return;
 }
