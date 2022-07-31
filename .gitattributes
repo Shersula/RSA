@@ -1,1 +1,2 @@
-RSA_Release(Linux)/Makefile.sh -linguist-vendored
+RSA_Release(Linux)/* -linguist-vendored
+RSA_Release(Windows)/* -linguist-vendored
