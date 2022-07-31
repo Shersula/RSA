@@ -1,2 +1,3 @@
 RSA_Release(Linux)/** linguist-vendored
 RSA/Makefile.sh  -linguist-vendored
+RSA/RSA.pro  -linguist-vendored
