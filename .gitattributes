@@ -1,2 +1,2 @@
 * linguist-vendored
-RSA_Release(Linux)/bin/Makefile linguist-vendored
+RSA_Release(Linux)/bin/Makefile/* linguist-vendored
